@@ -61,8 +61,11 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 				{
 
 					
-					int xIndex = (cellIndexX + x2) % numCellsXY;
-					int yIndex = (cellIndexY + y2) % numCellsXY;
+				//	int xIndex = (cellIndexX + x2) % numCellsXY;
+					int xIndex = (((cellIndexX + x2)%numCellsXY)+ numCellsXY)% numCellsXY;
+				//	int yIndex = (cellIndexY + y2) % numCellsXY;
+					int yIndex = (((cellIndexY + y2) % numCellsXY) + numCellsXY) % numCellsXY;
+
 					Point offset = cells[xIndex][yIndex];
 					
 #ifdef NOFLOAT
@@ -92,14 +95,14 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 					pointXCoord += 0.2f*cosf((float)(3* xIndex + SDL_GetTicks()*0.005f)*0.5f);
 
 					float pointYCoord = yIndex  + (offset.y/255.0f);
-						pointYCoord += 0.2f*cosf((float)(3* yIndex +SDL_GetTicks()*0.005f)*0.5f);
+						pointYCoord += 0.3f*cosf((float)(3* yIndex +SDL_GetTicks()*0.005f)*0.5f);
 					float dx = fabsf(pointXCoord - xCoord);
 					float dy = fabsf(pointYCoord - yCoord);
-					float half = numCellsXY /2.0f;
+					float half = (float)numCellsXY /2.0f;
 					if (dx > half)
-						dx = dx - half;
+						dx = numCellsXY - dx;
 					if (dy > half)
-						dy = dy - half;
+						dy = numCellsXY - dy;
 					float distance = ((dx * dx) + (dy * dy));
 
 					if (minDistance >= distance)
