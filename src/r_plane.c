@@ -38,6 +38,7 @@ rcsid[] = "$Id: r_plane.c,v 1.4 1997/02/03 16:47:55 b1 Exp $";
 
 #include "r_local.h"
 #include "r_sky.h"
+#include "r_procedural.h"
 
 #include "p_spec.h"
 
@@ -432,20 +433,25 @@ void R_DrawPlanes (void)
 	    continue;
 	}
 	int flatIndex =  flattranslation[pl->picnum];
+	ds_source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum],
+		PU_STATIC);
 	for (int a = 0; a < MAXANIMS && animRanges[a][2] != -1; a++)
 	{
 		if (animRanges[a][2] && flatIndex >= animRanges[a][1] && flatIndex <= animRanges[a][0])
 		{
-			warping = 1;
+			//warping = 1;
+			warping = 2;
 			break;
 		}
 			
 	}
 	// regular flat
-	ds_source = W_CacheLumpNum(firstflat +
-				   flattranslation[pl->picnum],
-				   PU_STATIC);
 
+	if (warping == 2)
+	{ 
+		R_GenerateWater(119, 127, ds_source);
+	//	R_GenerateWater(240, 245, ds_source);
+	}
 	planeheight = abs(pl->height-viewz);
 //	planeheight *= SCREEN_MUL;
 	light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;

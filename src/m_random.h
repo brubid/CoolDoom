@@ -27,7 +27,7 @@
 #include "doomtype.h"
 
 
-
+int Seed_Random(int seed);
 // Returns a number from 0 to 255,
 // from a lookup table.
 int M_Random (void);

@@ -54,6 +54,11 @@ int	rndindex = 0;
 int	prndindex = 0;
 
 // Which one is deterministic?
+int Seed_Random(int seed)
+{
+    int s = seed % 256;
+    return rndtable[s];
+}
 int P_Random (void)
 {
     prndindex = (prndindex+1)&0xff;
