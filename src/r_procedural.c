@@ -9,7 +9,7 @@
 #include "p_local.h"
 //64 should be divisible by this value
 #define numCellsXY 8
-
+#define NOFLOAT 1
 // generate water texture using voronoi noise with specified pallete range
 
 typedef struct
@@ -20,7 +20,8 @@ typedef struct
 byte* R_GenerateWater(byte min, byte max, byte* source)
 {
 
-
+	// try to generate a general voronoi and store
+	// then copy and recolor as needed for liquid textures
 	Point cells[numCellsXY][numCellsXY];
 	for (int x = 0; x < numCellsXY; x++)
 	{
@@ -33,8 +34,8 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 
 		}
 	}
-	int cellIndexX = -1, cellIndexY=0;
-	fixed_t time = I_GetTime() * FRACUNIT*64;
+	int cellIndexX = -1, cellIndexY=-1;
+	fixed_t time = I_GetTime() * FRACUNIT*8;
 	for (int x = 0; x < 64; x++)
 	{
 		cellIndexY = -1;
@@ -49,8 +50,9 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 			{
 				cellIndexY++;
 			}
+
 #ifdef NOFLOAT
-			fixed_t minDistance = MAXINT;
+			fixed_t minDistance = FRACUNIT;
 #else
 			float minDistance = 1.f;
 #endif
@@ -69,25 +71,32 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 					Point offset = cells[xIndex][yIndex];
 					
 #ifdef NOFLOAT
-					fixed_t xCoord = 16*(x * (FRACUNIT)* numCellsXY)/64;
-					fixed_t yCoord = 16*(y * (FRACUNIT)*numCellsXY)/64;
-					fixed_t pointXCoord = xIndex * (FRACUNIT>>0) +offset.x * (FRACUNIT >> 5);
-				//	pointXCoord += finesine[(xIndex + time) >> ANGLETOFINESHIFT];
+					fixed_t xCoord = (x * (FRACUNIT)*numCellsXY)>>6;
+					fixed_t yCoord = (y * (FRACUNIT)*numCellsXY)>>6;
+					fixed_t pointXCoord = xIndex * (FRACUNIT) + (offset.x * (FRACUNIT))/255;
+					angle_t angleX = ((time * 32 + 1024 * pointXCoord<<22 /numCellsXY));
+					
+						pointXCoord += (finesine[angleX >> ANGLETOFINESHIFT])>>2;
 
-					fixed_t pointYCoord = yIndex * (FRACUNIT >>0) + offset.y * (FRACUNIT >> 5);
-				//	pointYCoord += finecosine[(yIndex + time) >> ANGLETOFINESHIFT];
+					fixed_t pointYCoord = yIndex * (FRACUNIT) + (offset.y * (FRACUNIT))/255;
+					angle_t angleY = ((time * 32 + 1024*pointYCoord<<22 / numCellsXY));
+						pointYCoord += (finecosine[angleY >> ANGLETOFINESHIFT]) >> 2;
 					fixed_t dx = pointXCoord - xCoord;
+					if (pointXCoord < xCoord)
+						dx = xCoord - pointXCoord;
 					fixed_t dy = pointYCoord - yCoord;
-					fixed_t half = numCellsXY * (FRACUNIT >> 1);
+					if (pointYCoord < yCoord)
+						dy = yCoord - pointYCoord;
+					fixed_t half = (numCellsXY * (FRACUNIT))>>1;
 					if (dx > half)
-						dx = dx - half;
+						dx = (FRACUNIT*numCellsXY) - dx;
 					if (dy > half)
-						dy = dy - half;
-					fixed_t distance = P_AproxDistance(dx, dy)<<0;
-					if (minDistance >= distance)
+						dy = (FRACUNIT * numCellsXY) - dy;
+					fixed_t distance = FixedMul(dx, dx) + FixedMul(dy, dy);//P_AproxDistance(dx, dy)<<0;
+					if (minDistance > distance)
 						minDistance = distance;
 					
-					colIndex = minDistance >> FRACBITS;
+					colIndex = (minDistance*255) >> FRACBITS;
 #else
 					float xCoord = numCellsXY * x  / 64.0f;
 					float yCoord = numCellsXY * y / 64.0f;

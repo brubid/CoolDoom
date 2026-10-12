@@ -449,7 +449,7 @@ void R_DrawPlanes (void)
 
 	if (warping == 2)
 	{ 
-		R_GenerateWater(119, 127, ds_source);
+		R_GenerateWater(120, 127, ds_source);
 	//	R_GenerateWater(240, 245, ds_source);
 	}
 	planeheight = abs(pl->height-viewz);
