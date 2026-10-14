@@ -1,3 +1,7 @@
 #include "doomtype.h"
+extern byte min, max;
+extern boolean waterGenerated;
+extern byte waterData[];
 
-byte* R_GenerateWater(byte min, byte max, byte* source);
+void R_GenerateWater();
+byte R_ClampToRange(byte sample);

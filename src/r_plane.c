@@ -95,6 +95,7 @@ fixed_t			cachedystep[SCREENHEIGHT];
 
 int warping;
 
+boolean waterGenerated = false;
 //
 // R_InitPlanes
 // Only at game startup.
@@ -440,18 +441,53 @@ void R_DrawPlanes (void)
 		if (animRanges[a][2] && flatIndex >= animRanges[a][1] && flatIndex <= animRanges[a][0])
 		{
 			//warping = 1;
+		
 			warping = 2;
 			break;
 		}
 			
 	}
 	// regular flat
-
+	flatIndex = firstflat + flattranslation[pl->picnum];
 	if (warping == 2)
 	{ 
-		
+		if (!waterGenerated)
+		{
+			R_GenerateWater();
 
-		R_GenerateWater(120, 127, ds_source);
+		}
+		if (W_GetNumForName("NUKAGE1") <= flatIndex && flatIndex <= W_GetNumForName("NUKAGE3"))
+		{
+			min = 120;
+			max = 127;
+		}
+		else if (W_GetNumForName("FWATER1") <= flatIndex && flatIndex <= W_GetNumForName("FWATER4"))
+		{
+			min = 240;
+			max = 247;
+		}
+		else if (W_GetNumForName("LAVA1") <= flatIndex && flatIndex <= W_GetNumForName("LAVA4"))
+		{
+			min = 176;
+			max = 185;
+		}
+		else if (W_GetNumForName("BLOOD1") <= flatIndex && flatIndex <= W_GetNumForName("BLOOD3"))
+		{
+			min = 40;
+			max = 47;
+		}
+		else if (W_GetNumForName("SLIME01") <= flatIndex && flatIndex <= W_GetNumForName("SLIME04"))
+		{
+			min = 236;
+			max = 239;
+		}
+		else if (W_GetNumForName("SLIME05") <= flatIndex && flatIndex <= W_GetNumForName("SLIME08"))
+		{
+			min = 236;
+			max = 239;
+		}
+
+
 	//	R_GenerateWater(240, 245, ds_source);
 
 	}

@@ -11,17 +11,19 @@
 #define numCellsXY 8
 #define NOFLOAT 
 // generate water texture using voronoi noise with specified pallete range
-
+byte min, max;
+boolean waterGenerated;
+byte waterData[64 * 64];
 typedef struct
 {
 	byte x, y;
 } Point ;
 
-byte* R_GenerateWater(byte min, byte max, byte* source)
+void R_GenerateWater()
 {
 
-	// try to generate a general voronoi and store
-	// then copy and recolor as needed for liquid textures
+	// try to generate a general voronoi texture and store
+	// recolor as needed for liquid textures
 	Point cells[numCellsXY][numCellsXY];
 	for (int x = 0; x < numCellsXY; x++)
 	{
@@ -123,8 +125,7 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 			}
 			
 			colIndex = 255 - colIndex;
-			colIndex= (((colIndex) * (max - min)) / 255) + min;
-			source[x +(y * 64)] = colIndex; //(byte)(M_Random());
+			waterData[x +(y * 64)] = colIndex; //(byte)(M_Random());
 
 
 
@@ -132,6 +133,11 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 
 	}
 
+	waterGenerated = true;
 
-	return source;
+}
+
+byte R_ClampToRange(byte sample)
+{
+	return (((sample) * (max - min)) / 255) + min;
 }

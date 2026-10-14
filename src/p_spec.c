@@ -129,7 +129,7 @@ animdef_t		animdefs[] =
 
     {-1}
 };
-int animRanges[MAXANIMS][3];
+byte animRanges[MAXANIMS][3];
 anim_t		anims[MAXANIMS];
 anim_t*		lastanim;
 

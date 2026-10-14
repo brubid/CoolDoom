@@ -33,7 +33,7 @@
 //
 extern	boolean levelTimer;
 extern	int	levelTimeCount;
-extern int animRanges[MAXANIMS][3];
+extern byte animRanges[MAXANIMS][3];
 //      Define values for map objects
 #define MO_TELEPORTMAN          14
 
