@@ -9,7 +9,7 @@
 #include "p_local.h"
 //64 should be divisible by this value
 #define numCellsXY 8
-#define NOFLOAT 1
+#define NOFLOAT 
 // generate water texture using voronoi noise with specified pallete range
 
 typedef struct
@@ -35,7 +35,7 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 		}
 	}
 	int cellIndexX = -1, cellIndexY=-1;
-	fixed_t time = I_GetTime() * FRACUNIT*8;
+	fixed_t time = I_GetTime() * FRACUNIT<<9;
 	for (int x = 0; x < 64; x++)
 	{
 		cellIndexY = -1;
@@ -52,7 +52,7 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 			}
 
 #ifdef NOFLOAT
-			fixed_t minDistance = FRACUNIT;
+			fixed_t minDistance = FRACUNIT-1;
 #else
 			float minDistance = 1.f;
 #endif
@@ -73,14 +73,14 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 #ifdef NOFLOAT
 					fixed_t xCoord = (x * (FRACUNIT)*numCellsXY)>>6;
 					fixed_t yCoord = (y * (FRACUNIT)*numCellsXY)>>6;
-					fixed_t pointXCoord = xIndex * (FRACUNIT) + (offset.x * (FRACUNIT))/255;
-					angle_t angleX = ((time * 32 + 1024 * pointXCoord<<22 /numCellsXY));
+					fixed_t pointXCoord = xIndex * (FRACUNIT) + (offset.x * (FRACUNIT>>8));
+					angle_t angleX = ((time  + (offset.x *1024*2*FRACUNIT)));
 					
-						pointXCoord += (finesine[angleX >> ANGLETOFINESHIFT])>>2;
+						pointXCoord += (finesine[angleX >> ANGLETOFINESHIFT])>>1;
 
-					fixed_t pointYCoord = yIndex * (FRACUNIT) + (offset.y * (FRACUNIT))/255;
-					angle_t angleY = ((time * 32 + 1024*pointYCoord<<22 / numCellsXY));
-						pointYCoord += (finecosine[angleY >> ANGLETOFINESHIFT]) >> 2;
+					fixed_t pointYCoord = yIndex * (FRACUNIT) + (offset.y * (FRACUNIT>>8));
+					angle_t angleY = ((time + (offset.y * 1024 * 2 * FRACUNIT)));
+						pointYCoord += (finesine[angleY >> ANGLETOFINESHIFT]) >> 1;
 					fixed_t dx = pointXCoord - xCoord;
 					if (pointXCoord < xCoord)
 						dx = xCoord - pointXCoord;
@@ -96,7 +96,7 @@ byte* R_GenerateWater(byte min, byte max, byte* source)
 					if (minDistance > distance)
 						minDistance = distance;
 					
-					colIndex = (minDistance*255) >> FRACBITS;
+					colIndex = (minDistance) >> (FRACBITS-8);
 #else
 					float xCoord = numCellsXY * x  / 64.0f;
 					float yCoord = numCellsXY * y / 64.0f;
