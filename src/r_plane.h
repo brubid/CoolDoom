@@ -34,7 +34,7 @@
 // Visplane related.
 extern  short*		lastopening;
 
-extern int warping;
+extern boolean isLiquid;
 typedef void (*planefunction_t) (int top, int bottom);
 
 extern planefunction_t	floorfunc;

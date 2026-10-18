@@ -11,7 +11,8 @@
 #define numCellsXY 8
 #define NOFLOAT 
 // generate water texture using voronoi noise with specified pallete range
-byte min, max;
+byte min,min2, max, max2;
+byte rangeSplit;
 boolean waterGenerated;
 byte waterData[64 * 64];
 typedef struct
@@ -21,7 +22,6 @@ typedef struct
 
 void R_GenerateWater()
 {
-
 	// try to generate a general voronoi texture and store
 	// recolor as needed for liquid textures
 	Point cells[numCellsXY][numCellsXY];
@@ -37,7 +37,7 @@ void R_GenerateWater()
 		}
 	}
 	int cellIndexX = -1, cellIndexY=-1;
-	fixed_t time = I_GetTime() * FRACUNIT<<9;
+	fixed_t time = I_GetTime() * FRACUNIT<<10  ;
 	for (int x = 0; x < 64; x++)
 	{
 		cellIndexY = -1;
@@ -65,9 +65,7 @@ void R_GenerateWater()
 				{
 
 					
-				//	int xIndex = (cellIndexX + x2) % numCellsXY;
 					int xIndex = (((cellIndexX + x2)%numCellsXY)+ numCellsXY)% numCellsXY;
-				//	int yIndex = (cellIndexY + y2) % numCellsXY;
 					int yIndex = (((cellIndexY + y2) % numCellsXY) + numCellsXY) % numCellsXY;
 
 					Point offset = cells[xIndex][yIndex];
@@ -75,14 +73,15 @@ void R_GenerateWater()
 #ifdef NOFLOAT
 					fixed_t xCoord = (x * (FRACUNIT)*numCellsXY)>>6;
 					fixed_t yCoord = (y * (FRACUNIT)*numCellsXY)>>6;
+
 					fixed_t pointXCoord = xIndex * (FRACUNIT) + (offset.x * (FRACUNIT>>8));
 					angle_t angleX = ((time  + (offset.x *1024*2*FRACUNIT)));
-					
-						pointXCoord += (finesine[angleX >> ANGLETOFINESHIFT])>>1;
+					pointXCoord += (finesine[angleX >> ANGLETOFINESHIFT])>>2;
 
 					fixed_t pointYCoord = yIndex * (FRACUNIT) + (offset.y * (FRACUNIT>>8));
 					angle_t angleY = ((time + (offset.y * 1024 * 2 * FRACUNIT)));
-						pointYCoord += (finesine[angleY >> ANGLETOFINESHIFT]) >> 1;
+					pointYCoord += (finesine[angleY >> ANGLETOFINESHIFT]) >> 2;
+
 					fixed_t dx = pointXCoord - xCoord;
 					if (pointXCoord < xCoord)
 						dx = xCoord - pointXCoord;
@@ -94,10 +93,14 @@ void R_GenerateWater()
 						dx = (FRACUNIT*numCellsXY) - dx;
 					if (dy > half)
 						dy = (FRACUNIT * numCellsXY) - dy;
-					fixed_t distance = FixedMul(dx, dx) + FixedMul(dy, dy);//P_AproxDistance(dx, dy)<<0;
+					fixed_t distance = FixedMul(dx, dx) + FixedMul(dy, dy);
+					
+					if (distance < FRACUNIT>>3)
+					{
+						distance = FixedMul(distance,  distance);
+					}
 					if (minDistance > distance)
 						minDistance = distance;
-					
 					colIndex = (minDistance) >> (FRACBITS-8);
 #else
 					float xCoord = numCellsXY * x  / 64.0f;
@@ -123,21 +126,28 @@ void R_GenerateWater()
 #endif
 				}
 			}
-			
 			colIndex = 255 - colIndex;
-			waterData[x +(y * 64)] = colIndex; //(byte)(M_Random());
-
-
-
+			waterData[x +(y * 64)] = colIndex; 
 		}
-
 	}
-
 	waterGenerated = true;
-
 }
 
 byte R_ClampToRange(byte sample)
 {
 	return (((sample) * (max - min)) / 255) + min;
+}
+
+byte R_ClampToTwoRanges(byte sample)
+{
+
+
+	if (rangeSplit != 0 && sample <= rangeSplit)
+	{
+		return ( ( (sample) * (max2 - min2) ) / (rangeSplit) ) + min2;
+	}
+
+	return (((sample- rangeSplit) * (max - min)) / (255-rangeSplit)) + min;
+	
+
 }

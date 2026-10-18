@@ -41,6 +41,7 @@ rcsid[] = "$Id: r_plane.c,v 1.4 1997/02/03 16:47:55 b1 Exp $";
 #include "r_procedural.h"
 
 #include "p_spec.h"
+#include "m_misc.h"
 
 planefunction_t		floorfunc;
 planefunction_t		ceilingfunc;
@@ -93,7 +94,7 @@ fixed_t			cacheddistance[SCREENHEIGHT];
 fixed_t			cachedxstep[SCREENHEIGHT];
 fixed_t			cachedystep[SCREENHEIGHT];
 
-int warping;
+boolean isLiquid;
 
 boolean waterGenerated = false;
 //
@@ -398,7 +399,7 @@ void R_DrawPlanes (void)
 
     for (pl = visplanes ; pl < lastvisplane ; pl++)
     {
-		warping = 0;
+		isLiquid = false;
 	if (pl->minx > pl->maxx)
 	    continue;
 
@@ -436,55 +437,80 @@ void R_DrawPlanes (void)
 	int flatIndex =  flattranslation[pl->picnum];
 	ds_source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum],
 		PU_STATIC);
+	/*
 	for (int a = 0; a < MAXANIMS && animRanges[a][2] != -1; a++)
 	{
 		if (animRanges[a][2] && flatIndex >= animRanges[a][1] && flatIndex <= animRanges[a][0])
 		{
 			//warping = 1;
 		
-			warping = 2;
+			isLiquid = true;
 			break;
 		}
 			
 	}
+	*/
 	// regular flat
 	flatIndex = firstflat + flattranslation[pl->picnum];
-	if (warping == 2)
+	if (liquidwarping)
 	{ 
-		if (!waterGenerated)
+		rangeSplit = 0;
+		if (!waterGenerated && liquidwarping == 2)
 		{
 			R_GenerateWater();
 
 		}
 		if (W_GetNumForName("NUKAGE1") <= flatIndex && flatIndex <= W_GetNumForName("NUKAGE3"))
 		{
-			min = 120;
+			min = 118;
 			max = 127;
+			rangeSplit = 0;
+			isLiquid = true;
 		}
 		else if (W_GetNumForName("FWATER1") <= flatIndex && flatIndex <= W_GetNumForName("FWATER4"))
 		{
 			min = 240;
 			max = 247;
+			
+			rangeSplit = 110;
+			min2 = 205;
+			max2 = 207;
+			isLiquid = true;
+
 		}
 		else if (W_GetNumForName("LAVA1") <= flatIndex && flatIndex <= W_GetNumForName("LAVA4"))
 		{
-			min = 176;
-			max = 185;
+			min = 38;
+			max = 47;
+			rangeSplit = 180;
+			min2 = 162;
+			max2 = 167;
+			isLiquid = true;
+
 		}
 		else if (W_GetNumForName("BLOOD1") <= flatIndex && flatIndex <= W_GetNumForName("BLOOD3"))
 		{
 			min = 40;
 			max = 47;
+			rangeSplit = 0;
+			isLiquid = true;
+
 		}
 		else if (W_GetNumForName("SLIME01") <= flatIndex && flatIndex <= W_GetNumForName("SLIME04"))
 		{
-			min = 236;
-			max = 239;
+			min = 73;
+			max = 79;
+			rangeSplit = 0;
+			isLiquid = true;
+
 		}
 		else if (W_GetNumForName("SLIME05") <= flatIndex && flatIndex <= W_GetNumForName("SLIME08"))
 		{
 			min = 236;
 			max = 239;
+			rangeSplit = 0;
+			isLiquid = true;
+
 		}
 
 
@@ -492,8 +518,7 @@ void R_DrawPlanes (void)
 
 	}
 	planeheight = abs(pl->height-viewz);
-//	planeheight *= SCREEN_MUL;
-	light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;
+  	light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;
 
 	if (light >= LIGHTLEVELS)
 	    light = LIGHTLEVELS-1;
