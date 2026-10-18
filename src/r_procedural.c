@@ -8,7 +8,7 @@
 #include "i_system.h"
 #include "p_local.h"
 //64 should be divisible by this value
-#define numCellsXY 8
+#define numCellsXY 6
 #define NOFLOAT 
 // generate water texture using voronoi noise with specified pallete range
 byte min,min2, max, max2;
