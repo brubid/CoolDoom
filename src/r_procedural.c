@@ -8,7 +8,7 @@
 #include "i_system.h"
 #include "p_local.h"
 //64 should be divisible by this value
-#define numCellsXY 6
+#define numCellsXY 5
 #define NOFLOAT 
 // generate water texture using voronoi noise with specified pallete range
 byte min,min2, max, max2;
@@ -77,10 +77,10 @@ void R_GenerateWater()
 					fixed_t pointXCoord = xIndex * (FRACUNIT) + (offset.x * (FRACUNIT>>8));
 					angle_t angleX = ((time  + (offset.x *1024*2*FRACUNIT)));
 					pointXCoord += (finesine[angleX >> ANGLETOFINESHIFT])>>2;
-
 					fixed_t pointYCoord = yIndex * (FRACUNIT) + (offset.y * (FRACUNIT>>8));
 					angle_t angleY = ((time + (offset.y * 1024 * 2 * FRACUNIT)));
 					pointYCoord += (finesine[angleY >> ANGLETOFINESHIFT]) >> 2;
+					
 
 					fixed_t dx = pointXCoord - xCoord;
 					if (pointXCoord < xCoord)
@@ -128,6 +128,17 @@ void R_GenerateWater()
 			}
 			colIndex = 255 - colIndex;
 			waterData[x +(y * 64)] = colIndex; 
+		}
+	}
+	for (int x = 0; x < 64; x++)
+	{
+		for (int y = 0; y < 64;y++)
+		{
+			int x2 = (4 * x) % 64;
+			int y2 = (4 * y) % 64;
+
+			waterData[x + (y * 64)] = (waterData[x2 + (y2 * 64)] + 3*waterData[x + (y * 64)])>>2;
+
 		}
 	}
 	waterGenerated = true;

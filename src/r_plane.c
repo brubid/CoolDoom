@@ -472,7 +472,7 @@ void R_DrawPlanes (void)
 			min = 240;
 			max = 247;
 			
-			rangeSplit = 110;
+			rangeSplit = 150;
 			min2 = 205;
 			max2 = 207;
 			isLiquid = true;
@@ -490,8 +490,8 @@ void R_DrawPlanes (void)
 		}
 		else if (W_GetNumForName("BLOOD1") <= flatIndex && flatIndex <= W_GetNumForName("BLOOD3"))
 		{
-			min = 40;
-			max = 47;
+			min = 186;
+			max = 191;
 			rangeSplit = 0;
 			isLiquid = true;
 
