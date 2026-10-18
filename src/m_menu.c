@@ -245,6 +245,12 @@ void M_DrawMouseSettings(void);
 void M_SetMouselook(int choice);
 void M_SetAutoAim(int choice);
 int optionIndex;
+
+void M_Graphics(int choice);
+void M_LiquidSettings(int choice);
+void M_DrawGraphics(int choice);
+
+
 //
 // DOOM MENU
 //
@@ -382,6 +388,7 @@ enum
 
     controls,
     sound,
+    graphics,
     opt_end
 } options_e;
 
@@ -396,7 +403,8 @@ menuitem_t OptionsMenu[] =
  //      {2,"",	M_ChangeSensitivity,'m'},
  //      {-1,"",0},
        {1,"Controls",	M_Controls,'c'},
-       { 1,"Sound",	M_Sound,'c' }
+       { 1,"Sound",	M_Sound,'c' },
+       { 1,"Graphics",	M_Graphics,'c' }
 
 };
 menu_t  OptionsDef =
@@ -446,6 +454,68 @@ menuitem_t ControlsMenu[] =
     { 1,"Mouse Settings",	M_MouseSettings,0 }
 
 };
+
+enum
+{
+    screen_size,
+    empty_graphics,
+    empty_graphics2,
+    empty_graphics3,
+    liquid_anim,
+    graphics_end
+} graphics_e;
+
+menuitem_t GraphicsMenu[] =
+{
+    {2,"Screen Size",M_SizeDisplay,'s' },
+    {-1,"",0},
+    {-1,"",0},
+     {-1,"",0},
+    {2, "Liquid Animations: ", M_LiquidSettings, 'l'}
+};
+menu_t  GraphicsDef =
+{
+    graphics_end,
+    &OptionsDef,
+    GraphicsMenu,
+    M_DrawGraphics,
+    94,37,
+    0
+};
+void M_DrawGraphics(int choice)
+{
+    M_WriteText(94, 2, "Graphics");
+    M_DrawThermo(GraphicsDef.x, 7+GraphicsDef.y + 3*LINEHEIGHT>>1,
+        16, screenblocks);
+
+    switch (liquidwarping)
+    {
+        case 1:
+            M_WriteText(GraphicsDef.x + 130, GraphicsDef.y + LINEHEIGHT * 2, "Warp");
+            break;
+        case 2:
+            M_WriteText(GraphicsDef.x + 130, GraphicsDef.y + LINEHEIGHT * 2, "Procedural");
+            break;
+        default:
+            M_WriteText(GraphicsDef.x + 130, GraphicsDef.y + LINEHEIGHT * 2, "Classic");
+            break;
+    }
+
+}
+void M_LiquidSettings(int choice)
+{
+    if (choice)
+    {
+
+        liquidwarping = (liquidwarping + 1) % 3;
+    }
+    else
+    {
+        liquidwarping = (((liquidwarping -1) % 3) + 3) % 3;
+    }
+}
+
+
 void M_DrawControls(int choice);
 menu_t  ControlsDef =
 {
@@ -932,7 +1002,10 @@ void M_DrawSound(void)
     M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),
 		 16,snd_MusicVolume);
 }
-
+void M_Graphics(int choice)
+{
+    M_SetupNextMenu(&GraphicsDef);
+}
 void M_Sound(int choice)
 {
     M_SetupNextMenu(&SoundDef);
@@ -2099,7 +2172,7 @@ void M_Drawer (void)
 {
 
 
-    if (currentMenu == &ControlsDef || currentMenu == &OptionsDef || currentMenu == &MouseDef)
+    if (currentMenu == &ControlsDef || currentMenu == &OptionsDef || currentMenu == &MouseDef || currentMenu == &GraphicsDef)
     {
         M_SubDrawer();
         return;

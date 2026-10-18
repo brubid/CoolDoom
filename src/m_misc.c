@@ -180,40 +180,7 @@ M_ReadFile
 int		usemouse;
 int		usejoystick;
 
-extern int	key_right;
-extern int	key_left;
-extern int	key_up;
-extern int	key_down;
 
-extern int	key_strafeleft;
-extern int	key_straferight;
-
-extern int	key_fire;
-extern int	key_use;
-extern int	key_strafe;
-extern int	key_speed;
-
-extern int	mousebfire;
-extern int	mousebstrafe;
-extern int	mousebforward;
-
-extern int	joybfire;
-extern int	joybstrafe;
-extern int	joybuse;
-extern int	joybspeed;
-
-extern int	viewwidth;
-extern int	viewheight;
-
-extern int	mouseSensitivity;
-extern int	showMessages;
-
-extern int	detailLevel;
-
-extern int	screenblocks;
-extern int liquidwarping;
-
-extern int	showMessages;
 
 //extern int key_lookup, key_lookdown;
 extern int	y_mouse,x_mouse;

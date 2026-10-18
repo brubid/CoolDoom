@@ -42,7 +42,8 @@ rcsid[] = "$Id: r_draw.c,v 1.4 1997/02/03 16:47:55 b1 Exp $";
 // State.
 #include "doomstat.h"
 
-
+#include "r_procedural.h"
+#include "m_misc.h"
 // ?
 #define MAXWIDTH		15360	//1120
 #define MAXHEIGHT	11520	//	832
@@ -58,7 +59,7 @@ rcsid[] = "$Id: r_draw.c,v 1.4 1997/02/03 16:47:55 b1 Exp $";
 //  and we need only the base address,
 //  and the total size == width*height*depth/8.,
 //
-int warping;
+boolean isLiquid;
 
 byte*		viewimage; 
 int		viewwidth;
@@ -556,7 +557,7 @@ void R_DrawSpan (void)
     {
 	// Current texture index in u,v.
         fixed_t WarpX =0, WarpY =0;
-        if (warping)
+        if (isLiquid && liquidwarping == 1)
         {
 
    
@@ -572,11 +573,23 @@ void R_DrawSpan (void)
     //    WarpY += (finecosine[(time*2 + yfrac * 3) >> ANGLETOFINESHIFT] << 8);
    //     WarpX += (finecosine[(time*2 + xfrac * 3) >> ANGLETOFINESHIFT] << 8);
         }
-	spot = (( (WarpY+yfrac) >>(16-6))&(63*64)) + (( (WarpX+xfrac) >>16)&63);
 
+	spot = (( (WarpY+yfrac) >>(16-6))&(63*64)) + (( (WarpX+xfrac) >>16)&63);
+    if (isLiquid && liquidwarping == 2)
+    {
+
+
+        byte sample = R_ClampToTwoRanges((waterData[spot] ));
+
+        *dest++ = ds_colormap[sample];
+    }
+    else
+    {
+        *dest++ = ds_colormap[ds_source[spot]];
+    }
 	// Lookup pixel from flat texture tile,
 	//  re-index using light/colormap.
-	*dest++ = ds_colormap[ds_source[spot]];
+	
 
 	// Next step in u,v.
 	xfrac += ds_xstep; 

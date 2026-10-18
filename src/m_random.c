@@ -20,7 +20,7 @@
 //	Random number LUT.
 //
 //-----------------------------------------------------------------------------
-
+#include "doomdata.h"
 static const char rcsid[] = "$Id: m_random.c,v 1.1 1997/02/03 22:45:11 b1 Exp $";
 
 
@@ -54,6 +54,11 @@ int	rndindex = 0;
 int	prndindex = 0;
 
 // Which one is deterministic?
+int Seed_Random(byte seed)
+{
+    byte s = seed % 256;
+    return rndtable[s];
+}
 int P_Random (void)
 {
     prndindex = (prndindex+1)&0xff;

@@ -48,7 +48,7 @@ rcsid[] = "$Id: p_spec.c,v 1.6 1997/02/03 22:45:12 b1 Exp $";
 
 // State.
 #include "r_state.h"
-
+#include "m_misc.h"
 // Data.
 #include "sounds.h"
 #include <SDL3/sdl.h>
@@ -129,7 +129,7 @@ animdef_t		animdefs[] =
 
     {-1}
 };
-int animRanges[MAXANIMS][3];
+byte animRanges[MAXANIMS][3];
 anim_t		anims[MAXANIMS];
 anim_t*		lastanim;
 
@@ -1112,8 +1112,14 @@ void P_UpdateSpecials (void)
 	    pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
 	    if (anim->istexture)
 		texturetranslation[i] = pic;
-	//    else
-		//	flattranslation[i] = pic;
+		else if (liquidwarping == 0 || (W_GetNumForName("SLIME09") <= anim->basepic + firstflat && W_GetNumForName("SLIME12")  >= anim->basepic + firstflat)
+			|| (W_GetNumForName("RROCK05") <= anim->basepic + firstflat && W_GetNumForName("RROCK08") >= anim->basepic + firstflat))
+			
+		{
+
+			flattranslation[i] = pic;
+
+		}
 	}
     }
 
