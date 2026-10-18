@@ -1112,8 +1112,8 @@ void P_UpdateSpecials (void)
 	    pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
 	    if (anim->istexture)
 		texturetranslation[i] = pic;
-		else if (liquidwarping == 0 || (W_GetNumForName("SLIME09") <= anim->basepic + firstflat && W_GetNumForName("SLIME12")  >= anim->basepic + firstflat)
-			|| (W_GetNumForName("RROCK05") <= anim->basepic + firstflat && W_GetNumForName("RROCK08") >= anim->basepic + firstflat))
+		else if (liquidwarping == 0 || (gamemode==commercial&&((W_GetNumForName("SLIME09") <= anim->basepic + firstflat && W_GetNumForName("SLIME12")  >= anim->basepic + firstflat)
+			|| (W_GetNumForName("RROCK05") <= anim->basepic + firstflat && W_GetNumForName("RROCK08") >= anim->basepic + firstflat))))
 			
 		{
 

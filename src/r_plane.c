@@ -496,22 +496,26 @@ void R_DrawPlanes (void)
 			isLiquid = true;
 
 		}
-		else if (W_GetNumForName("SLIME01") <= flatIndex && flatIndex <= W_GetNumForName("SLIME04"))
+		else if (gamemode == commercial)
 		{
-			min = 73;
-			max = 79;
-			rangeSplit = 0;
-			isLiquid = true;
+			if (W_GetNumForName("SLIME01") <= flatIndex && flatIndex <= W_GetNumForName("SLIME04"))
+			{
+				min = 73;
+				max = 79;
+				rangeSplit = 0;
+				isLiquid = true;
 
-		}
-		else if (W_GetNumForName("SLIME05") <= flatIndex && flatIndex <= W_GetNumForName("SLIME08"))
-		{
-			min = 236;
-			max = 239;
-			rangeSplit = 0;
-			isLiquid = true;
+			}
+			else if (W_GetNumForName("SLIME05") <= flatIndex && flatIndex <= W_GetNumForName("SLIME08"))
+			{
+				min = 236;
+				max = 239;
+				rangeSplit = 0;
+				isLiquid = true;
 
+			}
 		}
+		
 
 
 	//	R_GenerateWater(240, 245, ds_source);
